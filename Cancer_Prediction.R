@@ -1,7 +1,3 @@
-# ---------------------------------------------------------
-# PROJECT: Predictive Modeling for Breast Cancer Diagnostics
-# AUTHOR:  Collins Amoo
-# ---------------------------------------------------------
 
 # METHODOLOGY OVERVIEW:
 # I employed the CART (Classification and Regression Trees) algorithm, 
@@ -24,39 +20,39 @@ cancer_data <- cancer_data %>%
   mutate(across(-Class, ~ as.integer(as.character(.))),
          Class = factor(Class))
 
-# -------------------------
+
 # 2) DATA SPLITTING (Methodology)
 # Partitioned into 80% training and 20% test sets using stratified sampling.
-# -------------------------
+
 set.seed(123)
 cancer_split <- initial_split(cancer_data, prop = 0.8, strata = Class)
 train_cancer <- training(cancer_split)
 test_cancer  <- testing(cancer_split)
 
-# -------------------------
+
 # 3) MODEL TRAINING
 # The model was trained using Gini Impurity to determine optimal splits.
-# -------------------------
+
 cancer_model <- rpart(
   Class ~ .,
   data = as.data.frame(train_cancer),
   method = "class"
 )
 
-# ---------------------------------------------------------
+
 # 4) MODEL EVALUATION (CONFUSION MATRIX)
 # This section evaluates the model's real-world applicability 
 # and checks for critical False Negatives.
-# ---------------------------------------------------------
+
 predictions <- predict(cancer_model, newdata = test_cancer, type = "class")
 conf_matrix <- confusionMatrix(predictions, test_cancer$Class)
 
 # Print the Evaluation to the Console
 print(conf_matrix)
 
-# -------------------------
+
 # 5) DEPLOYMENT: THE SHINY ASSISTANT
-# -------------------------
+
 ui <- fluidPage(
   titlePanel("Breast Cancer Diagnostic Tool (Decision Tree)"),
   
@@ -118,5 +114,6 @@ server <- function(input, output) {
     })
   })
 }
+
 
 shinyApp(ui = ui, server = server)
